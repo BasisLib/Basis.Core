@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>bleis-tift</authors>
+    <owners>bleis-tift</owners>
+    <licenseUrl>https://github.com/BasisLib/Basis.Core/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/BasisLib/Basis.Core</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <tags>f# library</tags>
+  </metadata>
+</package>

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Basis", "Basis\Basis.fsproj", "{3189367A-936A-4CD0-9D3F-0A22C5AEB383}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Basis.Core", "Basis.Core\Basis.Core.fsproj", "{3189367A-936A-4CD0-9D3F-0A22C5AEB383}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Basis.Tests", "Basis.Tests\Basis.Tests.fsproj", "{B02E1A96-8F83-4378-9A0F-9A7841A79BEC}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Basis.Core.Tests", "Basis.Core.Tests\Basis.Core.Tests.fsproj", "{B02E1A96-8F83-4378-9A0F-9A7841A79BEC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5AB77BC6-C72F-4C0D-A71D-1FAD696496B8}"
 	ProjectSection(SolutionItems) = preProject
