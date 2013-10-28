@@ -41,10 +41,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library1.fs" />
-    <None Include="Script.fsx" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Basis\Basis.fsproj">
       <Name>Basis</Name>
       <Project>{3189367a-936a-4cd0-9d3f-0a22c5aeb383}</Project>
