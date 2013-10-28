@@ -3,7 +3,7 @@
 open NUnit.Framework
 open FsUnit
 
-open Basis.Collections
+open Basis.Core.Collections
 
 [<TestFixture>]
 module NameValueBagTest =

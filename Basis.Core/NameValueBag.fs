@@ -1,4 +1,4 @@
-﻿namespace Basis.Collections
+﻿namespace Basis.Core.Collections
 
 open System
 open System.Collections.Specialized
