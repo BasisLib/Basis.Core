@@ -50,3 +50,30 @@ module OptionTest =
       return a + b |> string
     }
     res |> should equal expected
+
+  type Disposable(opt: int option) =
+    let mutable f: unit -> unit = fun () -> ()
+    member this.Opt = opt
+    member this.F with set v = f <- v
+    interface System.IDisposable with
+      member this.Dispose() =
+        f ()
+
+  let src_usingBinding = seq {
+    yield TestCaseData(None,                           false, None)
+    yield TestCaseData(Some (new Disposable(None)),    true,  None)
+    yield TestCaseData(Some (new Disposable(Some 10)), true,  Some "10")
+    yield TestCaseData(Some (new Disposable(Some 20)), true,  Some "20")
+  }
+
+  [<TestCaseSource "src_usingBinding">]
+  let usingBinding(opt: Disposable option, willDisposed: bool, expected: string option) =
+    let disposed = ref false
+    let res = option {
+      use! a = opt
+      a.F <- (fun () -> disposed := true)
+      let! b = a.Opt
+      return b |> string
+    }
+    res |> should equal expected
+    !disposed |> should equal willDisposed
