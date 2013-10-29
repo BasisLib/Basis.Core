@@ -12,6 +12,16 @@ module OptionTest =
     let res = option { return 0 }
     res |> should equal (Some 0)
 
+  let src_retFrom = seq {
+    yield TestCaseData(None)
+    yield TestCaseData(Some 10)
+  }
+
+  [<TestCaseSource "src_retFrom">]
+  let retFrom(opt: int option) =
+    let res = option { return! opt }
+    res |> should equal opt
+
   let src_letBinding = seq {
     yield TestCaseData(Some 10, Some "20")
     yield TestCaseData(None,    None)
