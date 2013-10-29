@@ -11,6 +11,8 @@ module Option =
     member this.Using(x: #IDisposable, f) =
       try (f x): _ option
       finally if (box x) <> null then x.Dispose()
+    member this.Combine(x: _ option, y: _ option) = x |> ignore; y
+    member this.Delay(f) = f ()
 
 [<AutoOpen>]
 module OptionDefaultOps =

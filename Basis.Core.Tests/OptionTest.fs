@@ -82,3 +82,21 @@ module OptionTest =
     }
     res |> should equal expected
     !disposed |> should equal willDisposed
+
+  let src_combine = seq {
+    yield TestCaseData(None,    false, None)
+    yield TestCaseData(Some 11, false, Some 11)
+    yield TestCaseData(Some 18, true,  Some 18)
+  }
+
+  [<TestCaseSource "src_combine">]
+  let combine(opt: int option, willEven: bool, expected: int option) =
+    let isEven = ref false
+    let res = option {
+      let! a = opt
+      if a % 2 = 0 then
+        isEven := true
+      return a
+    }
+    res |> should equal expected
+    !isEven |> should equal willEven
