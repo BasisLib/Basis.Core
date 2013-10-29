@@ -118,3 +118,27 @@ module OptionTest =
         _ -> return -1
     }
     res |> should equal expected
+
+  let src_tryFinally = seq {
+    yield TestCaseData((fun () -> None: int option),             (None: int option))
+    yield TestCaseData((fun () -> Some 10),                       Some 10)
+    yield TestCaseData((fun () -> failwith "oops!": int option),  null).Throws(typeof<System.Exception>)
+  }
+
+  [<TestCaseSource "src_tryFinally">]
+  let tryFinally(f: unit -> int option, expected: int option) =
+    let final = ref false
+    try
+      let res = option {
+        try
+          let! a = f ()
+          return a
+        finally
+          final := true
+      }
+      res |> should equal expected
+      !final |> should be True
+    with
+      _ ->
+        !final |> should be True
+        reraise ()
