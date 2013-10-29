@@ -86,7 +86,7 @@ module OptionTest =
   let src_combine = seq {
     yield TestCaseData(None,    false, None)
     yield TestCaseData(Some 11, false, Some 11)
-    yield TestCaseData(Some 18, true,  Some 18)
+    yield TestCaseData(Some 18, true,  Some 36)
   }
 
   [<TestCaseSource "src_combine">]
@@ -96,7 +96,25 @@ module OptionTest =
       let! a = opt
       if a % 2 = 0 then
         isEven := true
+        return a * 2
       return a
     }
     res |> should equal expected
     !isEven |> should equal willEven
+
+  let src_tryWith = seq {
+    yield TestCaseData((fun () -> None: int option),             (None: int option))
+    yield TestCaseData((fun () -> Some 10),                       Some 10)
+    yield TestCaseData((fun () -> failwith "oops!": int option),  Some -1)
+  }
+
+  [<TestCaseSource "src_tryWith">]
+  let tryWith(f: unit -> int option, expected: int option) =
+    let res = option {
+      try
+        let! a = f ()
+        return a
+      with
+        _ -> return -1
+    }
+    res |> should equal expected
