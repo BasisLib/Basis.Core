@@ -8,6 +8,11 @@ open Basis.Core
 [<TestFixture>]
 module OptionTest =
   [<Test>]
+  let zero() =
+    let res = option { () }
+    res |> should equal None
+
+  [<Test>]
   let ret() =
     let res = option { return 0 }
     res |> should equal (Some 0)
