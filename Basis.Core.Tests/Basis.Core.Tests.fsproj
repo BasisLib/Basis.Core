@@ -41,6 +41,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="App.config" />
+    <Compile Include="OptionTest.fs" />
     <Compile Include="NameValueBagTest.fs" />
   </ItemGroup>
   <ItemGroup>
