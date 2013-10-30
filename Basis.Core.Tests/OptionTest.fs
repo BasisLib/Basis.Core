@@ -17,6 +17,11 @@ module OptionTest =
     let res = option { return 0 }
     res |> should equal (Some 0)
 
+  [<Test>]
+  let retret() =
+    let res = option { return 10; return 20; }
+    res |> should equal (Some 10)
+
   let src_retFrom = seq {
     yield TestCaseData(None)
     yield TestCaseData(Some 10)
