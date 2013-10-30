@@ -2,6 +2,8 @@
 
 open NUnit.Framework
 open FsUnit
+open FsCheck
+open FsCheck.NUnit
 
 open Basis.Core
 
@@ -35,3 +37,15 @@ module ResultTest =
     x
     |> Result.toOptionFailure
     |> should equal expected
+
+  [<Test>]
+  let ``fold succes``() =
+    check ""
+      (fun (x, init) ->
+        (Success x |> Result.fold (fun acc x -> x::acc) init) = (Some x |> Option.fold (fun acc x -> x::acc) init))
+
+  [<Test>]
+  let ``fold failure``() =
+    check ""
+      (fun (x, init) ->
+        (Failure x |> Result.fold (fun acc x -> x::acc) init) = (None |> Option.fold (fun acc x -> x::acc) init))
