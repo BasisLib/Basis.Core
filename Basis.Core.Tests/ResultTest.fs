@@ -39,7 +39,7 @@ module ResultTest =
     |> should equal expected
 
   [<Test>]
-  let ``fold succes``() =
+  let ``fold success``() =
     check ""
       (fun (x, init) ->
         (Success x |> Result.fold (fun acc x -> x::acc) init) = (Some x |> Option.fold (fun acc x -> x::acc) init))
