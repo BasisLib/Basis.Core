@@ -142,3 +142,24 @@ module OptionTest =
       _ ->
         !final |> should be True
         reraise ()
+
+  let src_whileLoop = seq {
+    yield TestCaseData((None: int option), 0, (None: int option))
+    yield TestCaseData( Some 1,            5,  Some 1)
+    yield TestCaseData( Some 2,            6,  Some 2)
+    yield TestCaseData( Some 10,           10, Some -1)
+  }
+
+  [<TestCaseSource "src_whileLoop">]
+  let whileLoop(opt: int option, expectedCounter: int, expected: int option) =
+    let counter = ref 0
+    let res = option {
+      let! a = opt
+      while (!counter < 5) do
+        counter := !counter + a
+        if !counter = 10 then
+          return -1
+      return a
+    }
+    res |> should equal expected
+    !counter |> should equal expectedCounter
