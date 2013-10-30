@@ -61,3 +61,27 @@ module ResultTest =
     check ""
       (fun (x, init) ->
         (Failure x |> Result.foldFailure (fun acc x -> x::acc) init) = (Some x |> Option.fold (fun acc x -> x::acc) init))
+
+  [<Test>]
+  let ``bind success``() =
+    check ""
+      (fun x ->
+        (Success x |> Result.bind (fun v -> Success (v + 1)) |> Result.toOption) = (Some x |> Option.bind (fun v -> Some (v + 1))))
+
+  [<Test>]
+  let ``bind failure``() =
+    check ""
+      (fun x ->
+        (Failure x |> Result.bind (fun v -> Success (v + 1)) |> Result.toOption) = (None |> Option.bind (fun v -> Some (v + 1))))
+
+  [<Test>]
+  let ``bindFailure success``() =
+    check ""
+      (fun x ->
+        (Success x |> Result.bindFailure (fun v -> Success (v + 1)) |> Result.toOptionFailure) = (None |> Option.bind (fun v -> Some (v + 1))))
+
+  [<Test>]
+  let ``bindFailure failure``() =
+    check ""
+      (fun x ->
+        (Failure x |> Result.bindFailure (fun v -> Failure (v + 1)) |> Result.toOptionFailure) = (Some x |> Option.bind (fun v -> Some (v + 1))))
