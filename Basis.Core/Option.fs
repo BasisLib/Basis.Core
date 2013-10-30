@@ -17,6 +17,10 @@ module Option =
     member this.While(guard, f) =
       if not (guard ()) then None
       else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
+    member this.For(xs: #seq<_>, f) =
+      this.Using(
+        xs.GetEnumerator(),
+        fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
     member this.Delay(f: unit -> _ option) = f
     member this.Run(f) = f ()
 

@@ -163,3 +163,23 @@ module OptionTest =
     }
     res |> should equal expected
     !counter |> should equal expectedCounter
+
+  let src_forLoop = seq {
+    yield TestCaseData((None: int option), 0, (None: int option))
+    yield TestCaseData( Some 1,            5,  Some 1)
+    yield TestCaseData( Some -1,           3,  Some 0)
+  }
+
+  [<TestCaseSource "src_forLoop">]
+  let forLoop(opt: int option, expectedCounter: int, expected: int option) =
+    let counter = ref 0
+    let res = option {
+      let! a = opt
+      for i in 1..5 do
+        counter := i
+        if a = -1 && i = 3 then
+          return 0
+      return a
+    }
+    res |> should equal expected
+    !counter |> should equal expectedCounter
