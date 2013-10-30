@@ -49,3 +49,15 @@ module ResultTest =
     check ""
       (fun (x, init) ->
         (Failure x |> Result.fold (fun acc x -> x::acc) init) = (None |> Option.fold (fun acc x -> x::acc) init))
+
+  [<Test>]
+  let ``foldFailure success``() =
+    check ""
+      (fun (x, init) ->
+        (Success x |> Result.foldFailure (fun acc x -> x::acc) init) = (None |> Option.fold (fun acc x -> x::acc) init))
+
+  [<Test>]
+  let ``foldFailure failure``() =
+    check ""
+      (fun (x, init) ->
+        (Failure x |> Result.foldFailure (fun acc x -> x::acc) init) = (Some x |> Option.fold (fun acc x -> x::acc) init))
