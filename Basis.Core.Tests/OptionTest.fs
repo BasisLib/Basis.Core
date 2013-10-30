@@ -22,20 +22,20 @@ module OptionTest =
     let res = option { return 10; return 20; }
     res |> should equal (Some 10)
 
-  let src_retFrom = seq {
-    yield TestCaseData(None)
-    yield TestCaseData(Some 10)
-  }
+  let src_retFrom = [
+    TestCaseData(None)
+    TestCaseData(Some 10)
+  ]
 
   [<TestCaseSource "src_retFrom">]
   let retFrom(opt: int option) =
     let res = option { return! opt }
     res |> should equal opt
 
-  let src_letBinding = seq {
-    yield TestCaseData(Some 10, Some "20")
-    yield TestCaseData(None,    None)
-  }
+  let src_letBinding = [
+    TestCaseData(Some 10, Some "20")
+    TestCaseData(None,    None)
+  ]
 
   [<TestCaseSource "src_letBinding">]
   let letBinding(opt: int option, expected: string option) =
@@ -45,12 +45,12 @@ module OptionTest =
     }
     res |> should equal expected
 
-  let src_letBindings = seq {
-    yield TestCaseData(Some 10, Some 5, Some "15")
-    yield TestCaseData(Some 10, None,   None)
-    yield TestCaseData(None,    Some 5, None)
-    yield TestCaseData(None,    None,   None)
-  }
+  let src_letBindings = [
+    TestCaseData(Some 10, Some 5, Some "15")
+    TestCaseData(Some 10, None,   None)
+    TestCaseData(None,    Some 5, None)
+    TestCaseData(None,    None,   None)
+  ]
 
   [<TestCaseSource "src_letBindings">]
   let letBindings(opt1: int option, opt2: int option, expected: string option) =
@@ -69,12 +69,12 @@ module OptionTest =
       member this.Dispose() =
         f ()
 
-  let src_usingBinding = seq {
-    yield TestCaseData(None,                           false, None)
-    yield TestCaseData(Some (new Disposable(None)),    true,  None)
-    yield TestCaseData(Some (new Disposable(Some 10)), true,  Some "10")
-    yield TestCaseData(Some (new Disposable(Some 20)), true,  Some "20")
-  }
+  let src_usingBinding = [
+    TestCaseData(None,                           false, None)
+    TestCaseData(Some (new Disposable(None)),    true,  None)
+    TestCaseData(Some (new Disposable(Some 10)), true,  Some "10")
+    TestCaseData(Some (new Disposable(Some 20)), true,  Some "20")
+  ]
 
   [<TestCaseSource "src_usingBinding">]
   let usingBinding(opt: Disposable option, willDisposed: bool, expected: string option) =
@@ -88,11 +88,11 @@ module OptionTest =
     res |> should equal expected
     !disposed |> should equal willDisposed
 
-  let src_combine = seq {
-    yield TestCaseData(None,    false, None)
-    yield TestCaseData(Some 11, false, Some 11)
-    yield TestCaseData(Some 18, true,  Some 36)
-  }
+  let src_combine = [
+    TestCaseData(None,    false, None)
+    TestCaseData(Some 11, false, Some 11)
+    TestCaseData(Some 18, true,  Some 36)
+  ]
 
   [<TestCaseSource "src_combine">]
   let combine(opt: int option, willEven: bool, expected: int option) =
@@ -107,11 +107,11 @@ module OptionTest =
     res |> should equal expected
     !isEven |> should equal willEven
 
-  let src_tryWith = seq {
-    yield TestCaseData((fun () -> None: int option),             (None: int option))
-    yield TestCaseData((fun () -> Some 10),                       Some 10)
-    yield TestCaseData((fun () -> failwith "oops!": int option),  Some -1)
-  }
+  let src_tryWith = [
+    TestCaseData((fun () -> None: int option),             (None: int option))
+    TestCaseData((fun () -> Some 10),                       Some 10)
+    TestCaseData((fun () -> failwith "oops!": int option),  Some -1)
+  ]
 
   [<TestCaseSource "src_tryWith">]
   let tryWith(f: unit -> int option, expected: int option) =
@@ -124,11 +124,11 @@ module OptionTest =
     }
     res |> should equal expected
 
-  let src_tryFinally = seq {
-    yield TestCaseData((fun () -> None: int option),             (None: int option))
-    yield TestCaseData((fun () -> Some 10),                       Some 10)
-    yield TestCaseData((fun () -> failwith "oops!": int option),  null).Throws(typeof<System.Exception>)
-  }
+  let src_tryFinally = [
+    TestCaseData((fun () -> None: int option),             (None: int option))
+    TestCaseData((fun () -> Some 10),                       Some 10)
+    TestCaseData((fun () -> failwith "oops!": int option),  null).Throws(typeof<System.Exception>)
+  ]
 
   [<TestCaseSource "src_tryFinally">]
   let tryFinally(f: unit -> int option, expected: int option) =
@@ -148,12 +148,12 @@ module OptionTest =
         !final |> should be True
         reraise ()
 
-  let src_whileLoop = seq {
-    yield TestCaseData((None: int option), 0, (None: int option))
-    yield TestCaseData( Some 1,            5,  Some 1)
-    yield TestCaseData( Some 2,            6,  Some 2)
-    yield TestCaseData( Some 10,           10, Some -1)
-  }
+  let src_whileLoop = [
+    TestCaseData((None: int option), 0, (None: int option))
+    TestCaseData( Some 1,            5,  Some 1)
+    TestCaseData( Some 2,            6,  Some 2)
+    TestCaseData( Some 10,           10, Some -1)
+  ]
 
   [<TestCaseSource "src_whileLoop">]
   let whileLoop(opt: int option, expectedCounter: int, expected: int option) =
@@ -169,11 +169,11 @@ module OptionTest =
     res |> should equal expected
     !counter |> should equal expectedCounter
 
-  let src_forLoop = seq {
-    yield TestCaseData((None: int option), 0, (None: int option))
-    yield TestCaseData( Some 1,            5,  Some 1)
-    yield TestCaseData( Some -1,           3,  Some 0)
-  }
+  let src_forLoop = [
+    TestCaseData((None: int option), 0, (None: int option))
+    TestCaseData( Some 1,            5,  Some 1)
+    TestCaseData( Some -1,           3,  Some 0)
+  ]
 
   [<TestCaseSource "src_forLoop">]
   let forLoop(opt: int option, expectedCounter: int, expected: int option) =
