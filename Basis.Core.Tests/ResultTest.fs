@@ -38,8 +38,6 @@ module ResultTest =
     |> Result.toOptionFailure
     |> should equal expected
 
-  let check test = check "" test
-
   let checkEq1 resultF optionF (optionOfSuccess, optionOfFailure) =
     let eqSuccess x =
       try
