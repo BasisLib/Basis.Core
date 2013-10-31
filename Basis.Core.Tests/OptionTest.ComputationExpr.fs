@@ -6,7 +6,7 @@ open FsUnit
 open Basis.Core
 
 [<TestFixture>]
-module OptionTest =
+module OptionComputationExprTest =
   [<Test>]
   let zero() =
     let res = option { () }

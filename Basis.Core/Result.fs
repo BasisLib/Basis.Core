@@ -76,3 +76,10 @@ module Result =
 
   [<CompiledName "MapFailure">]
   let mapFailure f (result: Result<_, _>) = result.MapFailure(f)
+
+  type ResultBuilder internal () =
+    member this.Return(x) = Success x
+
+[<AutoOpen>]
+module ResultDefaultOps =
+  let result = Result.ResultBuilder()
