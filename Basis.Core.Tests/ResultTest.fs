@@ -132,3 +132,17 @@ module ResultTest =
   [<Test>]
   let ``Result.isFailure should equal to Option.isNone``() =
     checkEq1 (Result.isFailure) (Option.isNone) some_none
+
+  [<Test>]
+  let ``Result.iter should equal to Option.iter``() =
+    let res = ResizeArray<int>()
+    let opt = ResizeArray<int>()
+    checkEq1 (Result.iter res.Add) (Option.iter opt.Add) some_none
+    res.ToArray() |> should equal (opt.ToArray())
+
+  [<Test>]
+  let ``Result.iterFailure should equal to Option.iter``() =
+    let res = ResizeArray<int>()
+    let opt = ResizeArray<int>()
+    checkEq1 (Result.iterFailure res.Add) (Option.iter opt.Add) none_some
+    res.ToArray() |> should equal (opt.ToArray())

@@ -16,6 +16,8 @@ with
   member this.ForallFailure(pred) = match this with Failure e -> pred e | Success _ -> true
   member this.Get() = match this with Success s -> s | Failure _ -> invalidOp "has no success value"
   member this.GetFailure() = match this with Failure e -> e | Success _ -> invalidOp "has not failure value"
+  member this.Iter(act) = match this with Success s -> act s | Failure _ -> ()
+  member this.IterFailure(act) = match this with Failure e -> act e | Success _ -> ()
   override this.ToString() = sprintf "%A" this
 
 module Result =
@@ -60,3 +62,9 @@ module Result =
 
   [<CompiledName "IsFailure">]
   let isFailure = function Failure _ -> true | Success _ -> false
+
+  [<CompiledName "Iter">]
+  let iter act (result: Result<_, _>) = result.Iter(act)
+
+  [<CompiledName "IterFailure">]
+  let iterFailure act (result: Result<_, _>) = result.IterFailure(act)
