@@ -79,6 +79,9 @@ module Result =
 
   type ResultBuilder internal () =
     member this.Return(x) = Success x
+    member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
+    member this.Delay(f: unit -> Result<_, _>) = f
+    member this.Run(f) = f ()
 
 [<AutoOpen>]
 module ResultDefaultOps =

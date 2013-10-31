@@ -13,3 +13,8 @@ module ResultComputationExprTest =
   let ret () =
     let res = result { return 1 }
     res |> should equal (Success 1)
+
+  [<Test>]
+  let retret () =
+    let res = result { return 1; return 2 }
+    res |> should equal (Success 1)
