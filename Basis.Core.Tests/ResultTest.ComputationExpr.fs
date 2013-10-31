@@ -28,3 +28,18 @@ module ResultComputationExprTest =
   let retFrom(x: Result<int, string>) =
     let res = result { return! x }
     res |> should equal x
+
+  let src_letBinding =
+    let data (x: Result<int, string>, expected: Result<string, string>) = TestCaseData(x, expected)
+    [
+      data (Success 10,     Success "20")
+      data (Failure "hoge", Failure "hoge")
+    ]
+
+  [<TestCaseSource "src_letBinding">]
+  let letBinding(x: Result<int, string>, expected: Result<string, string>) =
+    let res = result {
+      let! a = x
+      return a * 2 |> string
+    }
+    res |> should equal expected
