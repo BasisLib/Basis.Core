@@ -66,3 +66,22 @@ module ResultComputationExprTest =
     }
     res |> should equal expected
     !disposed |> should equal willDisposed
+
+  let src_tryWith =
+    let data (f: unit -> Result<int, string>, expected: Result<int, string>) = TestCaseData(f, expected)
+    [
+      data ((fun () -> Failure "hoge"),   Failure "hoge")
+      data ((fun () -> Success 10),       Success 10)
+      data ((fun () -> failwith "oops!"), Success -1)
+    ]
+
+  [<TestCaseSource "src_tryWith">]
+  let tryWith(f: unit -> Result<int, string>, expected: Result<int, string>) =
+    let res = result {
+      try
+        let! a = f ()
+        return a
+      with
+        _ -> return -1
+    }
+    res |> should equal expected
