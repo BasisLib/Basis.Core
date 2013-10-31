@@ -54,3 +54,9 @@ module Result =
 
   [<CompiledName "GetFailure">]
   let getFailure (result: Result<_, _>) = try result.GetFailure() with _ -> invalidArg "result" "has no failure value"
+
+  [<CompiledName "IsSuccess">]
+  let isSuccess = function Success _ -> true | Failure _ -> false
+
+  [<CompiledName "IsFailure">]
+  let isFailure = function Failure _ -> true | Success _ -> false

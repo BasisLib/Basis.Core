@@ -124,3 +124,11 @@ module ResultTest =
   [<Test>]
   let ``Result.getFailure should equal to Option.get``() =
     checkEq1 (Result.getFailure) (Option.get) none_some
+
+  [<Test>]
+  let ``Result.isSuccess should equal to Option.isSome``() =
+    checkEq1 (Result.isSuccess) (Option.isSome) some_none
+
+  [<Test>]
+  let ``Result.isFailure should equal to Option.isNone``() =
+    checkEq1 (Result.isFailure) (Option.isNone) some_none
