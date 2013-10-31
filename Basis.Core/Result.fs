@@ -86,12 +86,26 @@ module Result =
     member this.Using(x: #IDisposable, f) =
       try (f x): Result<_, _>
       finally match box x with null -> () | notNull -> x.Dispose()
+    member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
     member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
     member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
-    member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
+    member this.Delay(f: unit -> Result<_, _>) = f
+    member this.Run(f) = f ()
+
+  type FailureBuilder internal () =
+    member this.Return(x) = Failure x
+    member this.ReturnFrom(x: Result<_, _>) = x
+    member this.Bind(x, f) = bindFailure f x
+    member this.Using(x: #IDisposable, f) =
+      try (f x): Result<_, _>
+      finally match box x with null -> () | notNull -> x.Dispose()
+    member this.Combine(x: Result<_, _>, rest) = if isFailure x then x else rest ()
+    member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
+    member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
     member this.Delay(f: unit -> Result<_, _>) = f
     member this.Run(f) = f ()
 
 [<AutoOpen>]
 module ResultDefaultOps =
   let result = Result.ResultBuilder()
+  let failure = Result.FailureBuilder()
