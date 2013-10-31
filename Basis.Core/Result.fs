@@ -1,5 +1,7 @@
 ﻿namespace Basis.Core
 
+open System
+
 type Result<'TSuccess, 'TFailure> =
   | Success of 'TSuccess
   | Failure of 'TFailure
@@ -81,6 +83,9 @@ module Result =
     member this.Return(x) = Success x
     member this.ReturnFrom(x: Result<_, _>) = x
     member this.Bind(x, f) = bind f x
+    member this.Using(x: #IDisposable, f) =
+      try (f x): Result<_, _>
+      finally match box x with null -> () | notNull -> x.Dispose()
     member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
     member this.Delay(f: unit -> Result<_, _>) = f
     member this.Run(f) = f ()

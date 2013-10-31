@@ -42,6 +42,7 @@
     <None Include="packages.config" />
     <None Include="App.config" />
     <Compile Include="FsCheck.NUnit.fs" />
+    <Compile Include="TestUtils.fs" />
     <Compile Include="OptionTest.ComputationExpr.fs" />
     <Compile Include="ResultTest.fs" />
     <Compile Include="ResultTest.ComputationExpr.fs" />

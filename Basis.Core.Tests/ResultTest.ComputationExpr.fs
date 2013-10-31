@@ -43,3 +43,26 @@ module ResultComputationExprTest =
       return a * 2 |> string
     }
     res |> should equal expected
+
+  let src_usingBinding =
+    let data (x: Result<Disposable<Result<int, string>>, string>, willDisposed: bool, expected: Result<string, string>) =
+      TestCaseData(x, willDisposed, expected)
+
+    [
+      data (Failure "hoge",                                                false, Failure "hoge")
+      data (Success (new Disposable<Result<int, string>>(Failure "hoge")), true,  Failure "hoge")
+      data (Success (new Disposable<Result<int, string>>(Success 10)),     true,  Success "10")
+      data (Success (new Disposable<Result<int, string>>(Success 20)),     true,  Success "20")
+    ]
+
+  [<TestCaseSource "src_usingBinding">]
+  let usingBinding(x: Result<Disposable<Result<int, string>>, string>, willDisposed: bool, expected: Result<string, string>) =
+    let disposed = ref false
+    let res = result {
+      use! a = x
+      a.F <- (fun () -> disposed := true)
+      let! b = a.Value
+      return b |> string
+    }
+    res |> should equal expected
+    !disposed |> should equal willDisposed
