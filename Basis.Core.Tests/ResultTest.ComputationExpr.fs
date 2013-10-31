@@ -24,9 +24,15 @@ module ResultComputationExprTest =
     let res = result { return 1 }
     res |> should equal (Success 1)
 
+    let res = resultWithZero ("oops!") { return 1 }
+    res |> should equal (Success 1)
+
   [<Test>]
   let retFailure () =
     let res = failure { return "hoge" }
+    res |> should equal (Failure "hoge")
+
+    let res = failureWithZero (0) { return "hoge" }
     res |> should equal (Failure "hoge")
 
   [<Test>]

@@ -93,6 +93,7 @@ module Result =
     member this.Run(f) = f ()
 
   type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
+    inherit ResultBuilder()
     member this.Zero () = Failure zeroValue
 
   type FailureBuilder internal () =
@@ -109,6 +110,7 @@ module Result =
     member this.Run(f) = f ()
 
   type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
+    inherit FailureBuilder()
     member this.Zero () = Success zeroValue
 
 [<AutoOpen>]
