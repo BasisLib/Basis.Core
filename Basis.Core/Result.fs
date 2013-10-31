@@ -1,5 +1,7 @@
 ﻿namespace Basis.Core
 
+open System
+
 type Result<'TSuccess, 'TFailure> =
   | Success of 'TSuccess
   | Failure of 'TFailure
@@ -76,3 +78,58 @@ module Result =
 
   [<CompiledName "MapFailure">]
   let mapFailure f (result: Result<_, _>) = result.MapFailure(f)
+
+  type ResultBuilder internal () =
+    member this.Return(x) = Success x
+    member this.ReturnFrom(x: Result<_, _>) = x
+    member this.Bind(x, f) = bind f x
+    member this.Using(x: #IDisposable, f) =
+      try (f x): Result<_, _>
+      finally match box x with null -> () | notNull -> x.Dispose()
+    member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
+    member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
+    member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
+    member this.Delay(f: unit -> Result<_, _>) = f
+    member this.Run(f) = f ()
+
+  type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
+    inherit ResultBuilder()
+    member this.Zero () = Failure zeroValue
+    member this.While(guard, f) =
+      if not (guard ()) then this.Zero()
+      else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
+    member this.For(xs: #seq<_>, f) =
+      this.Using(
+        xs.GetEnumerator(),
+        fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
+
+  type FailureBuilder internal () =
+    member this.Return(x) = Failure x
+    member this.ReturnFrom(x: Result<_, _>) = x
+    member this.Bind(x, f) = bindFailure f x
+    member this.Using(x: #IDisposable, f) =
+      try (f x): Result<_, _>
+      finally match box x with null -> () | notNull -> x.Dispose()
+    member this.Combine(x: Result<_, _>, rest) = if isFailure x then x else rest ()
+    member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
+    member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
+    member this.Delay(f: unit -> Result<_, _>) = f
+    member this.Run(f) = f ()
+
+  type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
+    inherit FailureBuilder()
+    member this.Zero () = Success zeroValue
+    member this.While(guard, f) =
+      if not (guard ()) then this.Zero()
+      else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
+    member this.For(xs: #seq<_>, f) =
+      this.Using(
+        xs.GetEnumerator(),
+        fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
+
+[<AutoOpen>]
+module ResultDefaultOps =
+  let result = Result.ResultBuilder()
+  let resultWithZero failureValue = Result.ResultWithZeroBuilder(failureValue)
+  let failure = Result.FailureBuilder()
+  let failureWithZero successValue = Result.FailureWithZeroBuilder(successValue)
