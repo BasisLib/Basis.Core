@@ -87,6 +87,7 @@ module Result =
       try (f x): Result<_, _>
       finally match box x with null -> () | notNull -> x.Dispose()
     member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
+    member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
     member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
     member this.Delay(f: unit -> Result<_, _>) = f
     member this.Run(f) = f ()

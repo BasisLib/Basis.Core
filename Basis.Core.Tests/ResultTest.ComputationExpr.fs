@@ -85,3 +85,29 @@ module ResultComputationExprTest =
         _ -> return -1
     }
     res |> should equal expected
+
+  let src_tryFinally =
+    let data (f: unit -> Result<int, string>, expected: Result<int, string>) = TestCaseData(f, expected)
+    [
+      (data ((fun () -> Failure "hoge"),   Failure "hoge"))
+      (data ((fun () -> Success 10),       Success 10))
+      (data ((fun () -> failwith "oops!"), Unchecked.defaultof<Result<int, string>>)).Throws(typeof<exn>)
+    ]
+
+  [<TestCaseSource "src_tryFinally">]
+  let tryFinally(f: unit -> Result<int, string>, expected: Result<int, string>) =
+    let final = ref false
+    try
+      let res = result {
+        try
+          let! a = f ()
+          return a
+        finally
+          final := true
+      }
+      res |> should equal expected
+      !final |> should equal true
+    with
+      _ ->
+        !final |> should equal true
+        reraise ()
