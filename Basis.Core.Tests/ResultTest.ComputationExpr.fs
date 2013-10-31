@@ -10,6 +10,16 @@ open Basis.Core
 [<TestFixture>]
 module ResultComputationExprTest =
   [<Test>]
+  let zero () =
+    let res = resultWithZero ("oops!") { () }
+    res |> should equal (Failure "oops!")
+
+  [<Test>]
+  let zeroFailure () =
+    let res = failureWithZero (0) { () }
+    res |> should equal (Success 0)
+
+  [<Test>]
   let ret () =
     let res = result { return 1 }
     res |> should equal (Success 1)

@@ -92,6 +92,9 @@ module Result =
     member this.Delay(f: unit -> Result<_, _>) = f
     member this.Run(f) = f ()
 
+  type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
+    member this.Zero () = Failure zeroValue
+
   type FailureBuilder internal () =
     member this.Return(x) = Failure x
     member this.ReturnFrom(x: Result<_, _>) = x
@@ -105,7 +108,12 @@ module Result =
     member this.Delay(f: unit -> Result<_, _>) = f
     member this.Run(f) = f ()
 
+  type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
+    member this.Zero () = Success zeroValue
+
 [<AutoOpen>]
 module ResultDefaultOps =
   let result = Result.ResultBuilder()
+  let resultWithZero failureValue = Result.ResultWithZeroBuilder(failureValue)
   let failure = Result.FailureBuilder()
+  let failureWithZero successValue = Result.FailureWithZeroBuilder(successValue)
