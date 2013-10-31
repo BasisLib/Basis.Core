@@ -86,3 +86,15 @@ module ResultTest =
     checkEq1 (Result.existsFailure (fun v -> v > 10))
              (Option.exists (fun v -> v > 10))
              none_some
+
+  [<Test>]
+  let ``Result.forall should equal to Option.forall``() =
+    checkEq1 (Result.forall (fun v -> v > 10))
+             (Option.forall (fun v -> v > 10))
+             some_none
+
+  [<Test>]
+  let ``Result.forallFailure should equal to Option.forall``() =
+    checkEq1 (Result.forallFailure (fun v -> v > 10))
+             (Option.forall (fun v -> v > 10))
+             none_some

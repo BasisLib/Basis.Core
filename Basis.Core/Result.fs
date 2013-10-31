@@ -12,6 +12,8 @@ with
   member this.BindFailure(f) = match this with Success s -> Success s | Failure e -> f e
   member this.Exists(pred) = match this with Success s -> pred s | Failure _ -> false
   member this.ExistsFailure(pred) = match this with Failure e -> pred e | Success _ -> false
+  member this.Forall(pred) = match this with Success s -> pred s | Failure _ -> true
+  member this.ForallFailure(pred) = match this with Failure e -> pred e | Success _ -> true
   override this.ToString() = sprintf "%A" this
 
 module Result =
@@ -38,3 +40,9 @@ module Result =
 
   [<CompiledName "ExistsFailure">]
   let existsFailure pred (result: Result<_, _>) = result.ExistsFailure(pred)
+
+  [<CompiledName "Forall">]
+  let forall pred (result: Result<_, _>) = result.Forall(pred)
+
+  [<CompiledName "ForallFailure">]
+  let forallFailure pred (result: Result<_, _>) = result.ForallFailure(pred)
