@@ -146,3 +146,15 @@ module ResultTest =
     let opt = ResizeArray<int>()
     checkEq1 (Result.iterFailure res.Add) (Option.iter opt.Add) none_some
     res.ToArray() |> should equal (opt.ToArray())
+
+  [<Test>]
+  let ``Reult.map should equal to Option.map``() =
+    checkEq1 (Result.map (fun x -> x / 2) >> Result.toOption)
+             (Option.map (fun x -> x / 2))
+             some_none
+
+  [<Test>]
+  let ``Result.mapFailure should equal to Option.map``() =
+    checkEq1 (Result.mapFailure (fun x -> x / 2) >> Result.toOptionFailure)
+             (Option.map (fun x -> x / 2))
+             none_some

@@ -18,6 +18,8 @@ with
   member this.GetFailure() = match this with Failure e -> e | Success _ -> invalidOp "has not failure value"
   member this.Iter(act) = match this with Success s -> act s | Failure _ -> ()
   member this.IterFailure(act) = match this with Failure e -> act e | Success _ -> ()
+  member this.Map(f) = match this with Success s -> Success (f s) | Failure e -> Failure e
+  member this.MapFailure(f) = match this with Failure e -> Failure (f e) | Success s -> Success s
   override this.ToString() = sprintf "%A" this
 
 module Result =
@@ -68,3 +70,9 @@ module Result =
 
   [<CompiledName "IterFailure">]
   let iterFailure act (result: Result<_, _>) = result.IterFailure(act)
+
+  [<CompiledName "Map">]
+  let map f (result: Result<_, _>) = result.Map(f)
+
+  [<CompiledName "MapFailure">]
+  let mapFailure f (result: Result<_, _>) = result.MapFailure(f)
