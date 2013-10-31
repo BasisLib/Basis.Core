@@ -10,6 +10,8 @@ with
   member this.FoldFailure(f, init) = match this with Failure e -> f init e | _ -> init
   member this.Bind(f) = match this with Success s -> f s | Failure e -> Failure e
   member this.BindFailure(f) = match this with Success s -> Success s | Failure e -> f e
+  member this.Exists(pred) = match this with Success s -> pred s | Failure _ -> false
+  member this.ExistsFailure(pred) = match this with Failure e -> pred e | Success _ -> false
   override this.ToString() = sprintf "%A" this
 
 module Result =
@@ -30,3 +32,9 @@ module Result =
 
   [<CompiledName "BindFailure">]
   let bindFailure f (result: Result<_, _>) = result.BindFailure(f)
+
+  [<CompiledName "Exists">]
+  let exists pred (result: Result<_, _>) = result.Exists(pred)
+
+  [<CompiledName "ExistsFailure">]
+  let existsFailure pred (result: Result<_, _>) = result.ExistsFailure(pred)

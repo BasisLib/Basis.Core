@@ -74,3 +74,15 @@ module ResultTest =
     checkEq1 (Result.bindFailure (fun v -> Failure (v + 1)) >> Result.toOptionFailure)
              (Option.bind (fun v -> Some (v + 1)))
              none_some
+
+  [<Test>]
+  let ``Result.exists should equal to Option.exists``() =
+    checkEq1 (Result.exists (fun v -> v > 10))
+             (Option.exists (fun v -> v > 10))
+             some_none
+
+  [<Test>]
+  let ``Result.existsFailure should equal to Option.exists``() =
+    checkEq1 (Result.existsFailure (fun v -> v > 10))
+             (Option.exists (fun v -> v > 10))
+             none_some
