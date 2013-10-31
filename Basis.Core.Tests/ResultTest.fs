@@ -41,8 +41,26 @@ module ResultTest =
   let check test = check "" test
 
   let checkEq1 resultF optionF (optionOfSuccess, optionOfFailure) =
-    check (fun x -> (Success x |> resultF) = (optionOfSuccess x |> optionF) &&
-                    (Failure x |> resultF) = (optionOfFailure x |> optionF))
+    let eqSuccess x =
+      try
+        let res = Success x |> resultF
+        (try
+          res = (optionOfSuccess x |> optionF)
+         with _ -> false)
+      with e1 ->
+        (try optionOfSuccess x |> optionF |> ignore; false
+         with e2 -> e1.GetType() = e2.GetType())
+    let eqFailure x =
+      try
+        let res = Failure x |> resultF
+        (try
+          res = (optionOfFailure x |> optionF)
+         with _ -> false)
+      with e1 ->
+        (try optionOfFailure x |> optionF |> ignore; false
+         with e2 -> e1.GetType() = e2.GetType())
+        
+    check (fun x -> eqSuccess x && eqFailure x)
 
   let checkEq2 resultF optionF (optionOfSuccess, optionOfFailure) =
     check (fun (x, y) -> (Success x |> resultF y) = (optionOfSuccess x |> optionF y) &&
@@ -98,3 +116,11 @@ module ResultTest =
     checkEq1 (Result.forallFailure (fun v -> v > 10))
              (Option.forall (fun v -> v > 10))
              none_some
+
+  [<Test>]
+  let ``Result.get should equal to Option.get``() =
+    checkEq1 (Result.get) (Option.get) some_none
+
+  [<Test>]
+  let ``Result.getFailure should equal to Option.get``() =
+    checkEq1 (Result.getFailure) (Option.get) none_some
