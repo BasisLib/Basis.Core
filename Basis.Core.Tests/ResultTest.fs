@@ -38,50 +38,39 @@ module ResultTest =
     |> Result.toOptionFailure
     |> should equal expected
 
-  [<Test>]
-  let ``fold success``() =
-    check ""
-      (fun (x, init) ->
-        (Success x |> Result.fold (fun acc x -> x::acc) init) = (Some x |> Option.fold (fun acc x -> x::acc) init))
+  let check test = check "" test
+
+  let checkEq1 resultF optionF (optionOfSuccess, optionOfFailure) =
+    check (fun x -> (Success x |> resultF) = (optionOfSuccess x |> optionF) &&
+                    (Failure x |> resultF) = (optionOfFailure x |> optionF))
+
+  let checkEq2 resultF optionF (optionOfSuccess, optionOfFailure) =
+    check (fun (x, y) -> (Success x |> resultF y) = (optionOfSuccess x |> optionF y) &&
+                         (Failure x |> resultF y) = (optionOfFailure x |> optionF y))
+
+  let some_none = (Some, (fun _ -> None))
+  let none_some = ((fun _ -> None), Some)
 
   [<Test>]
-  let ``fold failure``() =
-    check ""
-      (fun (x, init) ->
-        (Failure x |> Result.fold (fun acc x -> x::acc) init) = (None |> Option.fold (fun acc x -> x::acc) init))
+  let ``Result.fold should be equal to Option.fold``() =
+    checkEq2 (Result.fold (fun acc x -> x::acc))
+             (Option.fold (fun acc x -> x::acc))
+             some_none
 
   [<Test>]
-  let ``foldFailure success``() =
-    check ""
-      (fun (x, init) ->
-        (Success x |> Result.foldFailure (fun acc x -> x::acc) init) = (None |> Option.fold (fun acc x -> x::acc) init))
+  let ``Result.foldFailure should be equal to Option.fold``() =
+    checkEq2 (Result.foldFailure (fun acc x -> x::acc))
+             (Option.fold (fun acc x -> x::acc))
+             none_some
 
   [<Test>]
-  let ``foldFailure failure``() =
-    check ""
-      (fun (x, init) ->
-        (Failure x |> Result.foldFailure (fun acc x -> x::acc) init) = (Some x |> Option.fold (fun acc x -> x::acc) init))
+  let ``Result.bind should be equal to Option.bind``() =
+    checkEq1 (Result.bind (fun v -> Success (v + 1)) >> Result.toOption)
+             (Option.bind (fun v -> Some (v + 1)))
+             some_none
 
   [<Test>]
-  let ``bind success``() =
-    check ""
-      (fun x ->
-        (Success x |> Result.bind (fun v -> Success (v + 1)) |> Result.toOption) = (Some x |> Option.bind (fun v -> Some (v + 1))))
-
-  [<Test>]
-  let ``bind failure``() =
-    check ""
-      (fun x ->
-        (Failure x |> Result.bind (fun v -> Success (v + 1)) |> Result.toOption) = (None |> Option.bind (fun v -> Some (v + 1))))
-
-  [<Test>]
-  let ``bindFailure success``() =
-    check ""
-      (fun x ->
-        (Success x |> Result.bindFailure (fun v -> Success (v + 1)) |> Result.toOptionFailure) = (None |> Option.bind (fun v -> Some (v + 1))))
-
-  [<Test>]
-  let ``bindFailure failure``() =
-    check ""
-      (fun x ->
-        (Failure x |> Result.bindFailure (fun v -> Failure (v + 1)) |> Result.toOptionFailure) = (Some x |> Option.bind (fun v -> Some (v + 1))))
+  let ``Result.bindFailure should be equal to Option.bind``() =
+    checkEq1 (Result.bindFailure (fun v -> Failure (v + 1)) >> Result.toOptionFailure)
+             (Option.bind (fun v -> Some (v + 1)))
+             none_some
