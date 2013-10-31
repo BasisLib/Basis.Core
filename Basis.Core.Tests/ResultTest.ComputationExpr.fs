@@ -214,3 +214,48 @@ module ResultComputationExprTest =
       _ ->
         !final |> should equal true
         reraise ()
+
+  let src_whileLoop =
+    let data (x: Result<int, string>, expectedCounter: int, expected: Result<int, string>) = TestCaseData(x, expectedCounter, expected)
+    [
+      data (Failure "hoge",  0,  Failure "hoge")
+      data (Success 1,       5,  Success 1)
+      data (Success 2,       6,  Success 2)
+      data (Success 10,      10, Success -1)
+    ]
+
+  [<TestCaseSource "src_whileLoop">]
+  let whileLoop(x: Result<int, string>, expectedCounter: int, expected: Result<int, string>) =
+    let counter = ref 0
+    let res = resultWithZero ("oops!") {
+      let! a = x
+      while (!counter < 5) do
+        counter := !counter + a
+        if !counter = 10 then
+          return -1
+      return a
+    }
+    res |> should equal expected
+    !counter |> should equal expectedCounter
+
+  let src_forLoop =
+    let data (x: Result<int, string>, expectedCounter: int, expected: Result<int, string>) = TestCaseData(x, expectedCounter, expected)
+    [
+      data (Failure "hoge", 0, Failure "hoge")
+      data (Success 1,      5, Success 1)
+      data (Success -1,     3, Success 0)
+    ]
+
+  [<TestCaseSource "src_forLoop">]
+  let forLoop(x: Result<int, string>, expectedCounter: int, expected: Result<int, string>) =
+    let counter = ref 0
+    let res = resultWithZero ("oops!") {
+      let! a = x
+      for i in 1..5 do
+        counter := i
+        if a = -1 && i = 3 then
+          return 0
+      return a
+    }
+    res |> should equal expected
+    !counter |> should equal expectedCounter

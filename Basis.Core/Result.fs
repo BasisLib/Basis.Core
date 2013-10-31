@@ -95,6 +95,13 @@ module Result =
   type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
     inherit ResultBuilder()
     member this.Zero () = Failure zeroValue
+    member this.While(guard, f) =
+      if not (guard ()) then this.Zero()
+      else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
+    member this.For(xs: #seq<_>, f) =
+      this.Using(
+        xs.GetEnumerator(),
+        fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
 
   type FailureBuilder internal () =
     member this.Return(x) = Failure x
@@ -112,6 +119,13 @@ module Result =
   type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
     inherit FailureBuilder()
     member this.Zero () = Success zeroValue
+    member this.While(guard, f) =
+      if not (guard ()) then this.Zero()
+      else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
+    member this.For(xs: #seq<_>, f) =
+      this.Using(
+        xs.GetEnumerator(),
+        fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
 
 [<AutoOpen>]
 module ResultDefaultOps =
