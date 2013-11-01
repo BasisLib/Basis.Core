@@ -15,5 +15,5 @@ let runner =
 
 let config = { Config.Default with Runner = runner }
 
-let check name testable =
-  Check.One (name, config, testable)
+let check testable =
+  Check.One ("", config, testable)
