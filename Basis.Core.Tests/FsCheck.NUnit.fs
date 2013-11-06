@@ -17,3 +17,15 @@ let config = { Config.Default with Runner = runner }
 
 let check testable =
   Check.One ("", config, testable)
+
+open System
+
+type NullableGen =
+  static member Nullable () =
+    Arb.fromGen (gen {
+      let! x = Arb.generate<_ option>
+      return
+        match x with Some x -> Nullable x | None -> Nullable<_>()
+    })
+
+do Arb.register<NullableGen>() |> ignore

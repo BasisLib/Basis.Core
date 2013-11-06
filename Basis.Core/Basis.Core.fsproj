@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Str.fs" />
+    <Compile Include="Nullable.fs" />
     <Compile Include="Option.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="NameValueBag.fs" />
