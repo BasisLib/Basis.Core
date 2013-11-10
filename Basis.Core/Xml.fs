@@ -22,7 +22,7 @@ module Xml =
   [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Declaration =
     let empty = { Version = None; Encoding = None; Standalone = None }
-    let utf8 = { empty with Encoding = Some System.Text.Encoding.UTF8 }
+    let utf8 = { empty with Version = Some Ver1_0; Encoding = Some System.Text.Encoding.UTF8 }
     let utf8_1_1 = { utf8 with Version = Some Ver1_1 }
 
   let xname name = XName.Get(name)
@@ -35,6 +35,7 @@ open Xml
 
 module XAttribute =
   let value (attr: XAttribute) = attr.Value
+  let toStr (attr: XAttribute) = attr.ToString()
 
 module XContainer =
   let getElems name (xml: #XContainer) = xml.Elements(xname name)
@@ -48,6 +49,8 @@ module XContainer =
     | null -> failwithf "'%s' is not found" name
     | elem -> elem
 
+  let toStr (xml: #XContainer) = xml.ToString()
+
 module XElement =
   let isEmpty (xml: XElement) = xml.IsEmpty
   let getElems name (xml: XElement) = xml.Elements(xname name)
@@ -58,12 +61,18 @@ module XElement =
     match xml.Attribute(xname name) with
     | null -> None
     | attr -> Some attr
+  let getAttr name (xml: XElement) =
+    match xml.Attribute(xname name) with
+    | null -> failwithf "'%s' is not found" name
+    | attr -> attr
 
   let tryParse str = try Some (XElement.Parse(str)) with _ -> None
   let parse str = XElement.Parse(str)
   let loadStream (stream: System.IO.Stream) = XElement.Load(stream)
   let loadReader (reader: System.IO.TextReader) = XElement.Load(reader)
   let loadXmlReader (reader: System.Xml.XmlReader) = XElement.Load(reader)
+
+  let toStr (xml: XElement) = xml.ToString()
 
 module XDocument =
   let decl (xml: XDocument) = xml.Declaration
@@ -74,3 +83,5 @@ module XDocument =
   let loadStream (stream: System.IO.Stream) = XDocument.Load(stream)
   let loadReader (reader: System.IO.TextReader) = XDocument.Load(reader)
   let loadXmlReader (reader: System.Xml.XmlReader) = XDocument.Load(reader)
+
+  let toStr (xml: XDocument) = xml.ToString()

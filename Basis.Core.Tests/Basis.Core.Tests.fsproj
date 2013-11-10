@@ -45,6 +45,7 @@
     <Compile Include="TestUtils.fs" />
     <Compile Include="StrTest.fs" />
     <Compile Include="NullableTest.fs" />
+    <Compile Include="XmlTest.fs" />
     <Compile Include="OptionTest.ComputationExpr.fs" />
     <Compile Include="ResultTest.fs" />
     <Compile Include="ResultTest.ComputationExpr.fs" />
@@ -75,6 +76,8 @@
       <Project>{3189367a-936a-4cd0-9d3f-0a22c5aeb383}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
