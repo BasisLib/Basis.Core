@@ -19,14 +19,18 @@ module Option =
   | None -> defaultLazyValue |> Lazy.value
 
   type OptionBuilder internal () =
+    let mutable specialRet: obj option = None
     member this.Zero() = None
     member this.Return(x) = Some x
-    member this.ReturnFrom(x: _ option) = x
+    member this.ReturnFrom(x: _ option) = specialRet <- Some (box x); x
     member this.Bind(x, f) = Option.bind f x
     member this.Using(x: #IDisposable, f) =
       try (f x): _ option
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine(x: _ option, rest: unit -> _ option) = if x.IsSome then x else rest ()
+    member this.Combine(x: _ option, rest: unit -> _ option) =
+      match specialRet with
+      | Some x -> unbox x
+      | None -> if x.IsSome then x else rest ()
     member this.TryWith(f, h) = try (f ()): _ option with e -> h e
     member this.TryFinally(f, g) = try (f ()): _ option finally g ()
     member this.While(guard, f) =
@@ -37,7 +41,7 @@ module Option =
         xs.GetEnumerator(),
         fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
     member this.Delay(f: unit -> _ option) = f
-    member this.Run(f) = f ()
+    member this.Run(f) = specialRet <- None; f ()
 
 [<AutoOpen>]
 module OptionDefaultOps =

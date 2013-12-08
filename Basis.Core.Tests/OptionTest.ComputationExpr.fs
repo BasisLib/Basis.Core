@@ -29,7 +29,7 @@ module OptionComputationExprTest =
 
   [<TestCaseSource "src_retFrom">]
   let retFrom(opt: int option) =
-    let res = option { return! opt }
+    let res = option { return! opt; return 0 }
     res |> should equal opt
 
   let src_letBinding = [
