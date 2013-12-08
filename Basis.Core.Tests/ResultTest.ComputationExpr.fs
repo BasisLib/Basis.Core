@@ -55,12 +55,12 @@ module ResultComputationExprTest =
 
   [<TestCaseSource "src_retFrom">]
   let retFrom (x: Result<int, string>) =
-    let res = result { return! x }
+    let res = result { return! x; return 0 }
     res |> should equal x
 
   [<TestCaseSource "src_retFrom">]
   let retFromFailure (x: Result<int, string>) =
-    let res = failure { return! x }
+    let res = failure { return! x; return "piyo" }
     res |> should equal x
 
   let src_letBinding =

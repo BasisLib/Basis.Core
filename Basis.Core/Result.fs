@@ -98,17 +98,21 @@ module Result =
   let mapFailure f (result: Result<_, _>) = result.MapFailure(f)
 
   type ResultBuilder internal () =
+    let mutable specialRet: obj option = None
     member this.Return(x) = Success x
-    member this.ReturnFrom(x: Result<_, _>) = x
+    member this.ReturnFrom(x: Result<_, _>) = specialRet <- Some (box x); x
     member this.Bind(x, f) = bind f x
     member this.Using(x: #IDisposable, f) =
       try (f x): Result<_, _>
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine(x: Result<_, _>, rest) = if isSuccess x then x else rest ()
+    member this.Combine(x: Result<_, _>, rest) =
+      match specialRet with
+      | Some x -> unbox x
+      | None -> if isSuccess x then x else rest ()
     member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
     member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
     member this.Delay(f: unit -> Result<_, _>) = f
-    member this.Run(f) = f ()
+    member this.Run(f) = specialRet <- None; f ()
 
   type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
     inherit ResultBuilder()
@@ -122,17 +126,21 @@ module Result =
         fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
 
   type FailureBuilder internal () =
+    let mutable specialRet: obj option = None
     member this.Return(x) = Failure x
-    member this.ReturnFrom(x: Result<_, _>) = x
+    member this.ReturnFrom(x: Result<_, _>) = specialRet <- Some (box x); x
     member this.Bind(x, f) = bindFailure f x
     member this.Using(x: #IDisposable, f) =
       try (f x): Result<_, _>
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine(x: Result<_, _>, rest) = if isFailure x then x else rest ()
+    member this.Combine(x: Result<_, _>, rest) =
+      match specialRet with
+      | Some x -> unbox x
+      | None -> if isFailure x then x else rest ()
     member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
     member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
     member this.Delay(f: unit -> Result<_, _>) = f
-    member this.Run(f) = f ()
+    member this.Run(f) = specialRet <- None; f ()
 
   type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
     inherit FailureBuilder()
