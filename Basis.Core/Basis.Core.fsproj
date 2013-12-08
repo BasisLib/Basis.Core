@@ -50,6 +50,7 @@
     <Compile Include="XPath.fs" />
     <Compile Include="Option.fs" />
     <Compile Include="Result.fs" />
+    <Compile Include="List.fs" />
     <Compile Include="NameValueBag.fs" />
   </ItemGroup>
   <PropertyGroup>
