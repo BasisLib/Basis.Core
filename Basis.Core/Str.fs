@@ -34,8 +34,7 @@ module Str =
   let split2 (separator: string) (str: string) =
     match str.Split([|separator|], 2, StringSplitOptions.None) with
     | [| a; b |] -> (a, b)
-    | [| a |] -> (a, "")
-    | _ -> ("", "")
+    | _ -> failwithf "str has no separators."
 
   [<CompiledName "SplitBy">]
   let splitBy (separator: string) (str: string) = str.Split([| separator |], StringSplitOptions.None)
