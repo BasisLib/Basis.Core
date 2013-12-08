@@ -52,6 +52,9 @@ module Str =
   [<CompiledName "IsNullOrEmpty">]
   let isNullOrEmpty str = String.IsNullOrEmpty(str)
 
+  [<CompiledName "IsNullOrWhiteSpace">]
+  let isNullOrWhiteSpace str = String.IsNullOrWhiteSpace(str)
+
   [<CompiledName "Concat">]
   let concat (xs: seq<_>) = String.Concat(xs)
 
@@ -100,6 +103,9 @@ module Str =
   [<CompiledName "Substring">]
   let subFrom start (str: string) = str.Substring(start)
 
+  [<CompiledName "SubstringTo">]
+  let subTo len (str: string) = str.Substring(0, len)
+
   [<CompiledName "Slice">]
   let slice start endPos (str: string) = str.Substring(start, endPos - start)
 
@@ -123,3 +129,31 @@ module Str =
 
   [<CompiledName "TrimEnd">]
   let trimEnd (str: string) = str.TrimEnd()
+
+  [<CompiledName "TryFind">]
+  let tryFindIndex pred (str: string) =
+    str |> Seq.tryFindIndex pred
+
+  [<CompiledName "Truncate">]
+  let truncate n (str: string) =
+    if n < 0 then ""
+    elif length str < n then str
+    else subTo n str
+
+  [<CompiledName "Skip">]
+  let skip n (str: string) = subFrom n str
+
+  [<CompiledName "Take">]
+  let take n (str: string) = subTo n str
+
+  [<CompiledName "SkipWhile">]
+  let skipWhile pred (str: string) =
+    match tryFindIndex (pred >> not) str with
+    | Some idx -> subFrom idx str
+    | None -> ""
+
+  [<CompiledName "TakeWhile">]
+  let takeWhile pred (str: string) =
+    match tryFindIndex (pred >> not) str with
+    | Some idx -> subTo idx str
+    | None -> str

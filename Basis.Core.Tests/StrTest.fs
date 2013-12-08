@@ -40,3 +40,21 @@ module StrTest =
     str
     |> Str.slice start endPos
     |> should equal expected
+
+  [<Test>]
+  let ``Str.truncate should be equal to Seq.truncate``() =
+    check
+      (fun (str: string, n: int) ->
+        (str |> Str.truncate n) = (str |> Seq.truncate n |> Str.join ""))
+
+  [<Test>]
+  let ``Str.skipWhile should be equal to Seq.skipWhile``() =
+    check
+      (fun (str: string) ->
+        (str |> Str.skipWhile Char.IsDigit) = (str |> Seq.skipWhile Char.IsDigit |> Str.join ""))
+
+  [<Test>]
+  let ``Str.takeWhile should be equal to Seq.takeWhile``() =
+    check
+      (fun (str: string) ->
+        (str |> Str.takeWhile Char.IsDigit) = (str |> Seq.takeWhile Char.IsDigit |> Str.join ""))
