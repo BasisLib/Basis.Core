@@ -61,6 +61,24 @@ module Result =
   [<CompiledName "GetFailure">]
   let getFailure (result: Result<_, _>) = try result.GetFailure() with _ -> invalidArg "result" "has no failure value"
 
+  [<CompiledName "GetOr">]
+  let getOr defaultValue = function Success v -> v | Failure _ -> defaultValue
+
+  [<CompiledName "GetFailureOr">]
+  let getFailureOr defaultValue = function Failure v -> v | Success _ -> defaultValue
+
+  [<CompiledName "GetOrElse">]
+  let getOrElse defaultValueSource = function Success v -> v | Failure _ -> defaultValueSource ()
+
+  [<CompiledName "GetFailureOrElse">]
+  let getFailueOrElse defaultValueSource = function Failure v -> v | Success _ -> defaultValueSource ()
+
+  [<CompiledName "GetOrElse">]
+  let getOr' defaultLazyValue = function Success v -> v | Failure _ -> defaultLazyValue |> Lazy.value
+
+  [<CompiledName "GetFailureOrElse">]
+  let getFailureOr' defaultLazyValue = function Failure v -> v | Success _ -> defaultLazyValue |> Lazy.value
+
   [<CompiledName "IsSuccess">]
   let isSuccess = function Success _ -> true | Failure _ -> false
 
