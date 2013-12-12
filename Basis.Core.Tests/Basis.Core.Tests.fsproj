@@ -46,6 +46,7 @@
     <Compile Include="StrTest.fs" />
     <Compile Include="NullableTest.fs" />
     <Compile Include="XmlTest.fs" />
+    <Compile Include="XPathTest.fs" />
     <Compile Include="OptionTest.ComputationExpr.fs" />
     <Compile Include="ResultTest.fs" />
     <Compile Include="ResultTest.ComputationExpr.fs" />
