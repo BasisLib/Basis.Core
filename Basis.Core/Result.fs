@@ -97,26 +97,34 @@ module Result =
   [<CompiledName "MapFailure">]
   let mapFailure f (result: Result<_, _>) = result.MapFailure(f)
 
+  open System.ComponentModel
+
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  module Impl =
+    [<EditorBrowsable(EditorBrowsableState.Never)>]
+    type ExprBreakType = Break | Continue
+
+  open Impl
+
   type ResultBuilder internal () =
-    let mutable specialRet: obj option = None
-    member this.Return(x) = Success x
-    member this.ReturnFrom(x: Result<_, _>) = specialRet <- Some (box x); x
-    member this.Bind(x, f) = bind f x
-    member this.Using(x: #IDisposable, f) =
-      try (f x): Result<_, _>
+    member this.Return(x) = (Success x), Break
+    member this.ReturnFrom(x: Result<_, _>) = x, Break
+    member this.Bind(x, f: _ -> Result<_,_> * ExprBreakType) = (bind (f >> fst) x, Continue)
+    member this.Using(x: #IDisposable, f: #IDisposable -> Result<_,_> * ExprBreakType) =
+      try f x
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine(x: Result<_, _>, rest) =
-      match specialRet with
-      | Some x -> unbox x
-      | None -> if isSuccess x then x else rest ()
-    member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
-    member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
-    member this.Delay(f: unit -> Result<_, _>) = f
-    member this.Run(f) = specialRet <- None; f ()
+    member this.Combine((x: Result<_, _>, typ), rest: unit -> Result<_,_> * ExprBreakType) =
+      match typ with
+      | Break -> x, Break
+      | Continue -> if isSuccess x then x, Break else rest ()
+    member this.TryWith(f, h) = try (f ()) with e -> h e
+    member this.TryFinally(f, g) = try (f ()) finally g ()
+    member this.Delay(f: unit -> (Result<_, _> * ExprBreakType)) = f
+    member this.Run(f) = f () |> fst
 
   type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
     inherit ResultBuilder()
-    member this.Zero () = Failure zeroValue
+    member this.Zero () = Failure zeroValue, Continue
     member this.While(guard, f) =
       if not (guard ()) then this.Zero()
       else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
@@ -126,25 +134,24 @@ module Result =
         fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
 
   type FailureBuilder internal () =
-    let mutable specialRet: obj option = None
-    member this.Return(x) = Failure x
-    member this.ReturnFrom(x: Result<_, _>) = specialRet <- Some (box x); x
-    member this.Bind(x, f) = bindFailure f x
-    member this.Using(x: #IDisposable, f) =
-      try (f x): Result<_, _>
+    member this.Return(x) = Failure x, Break
+    member this.ReturnFrom(x: Result<_, _>) = x, Break
+    member this.Bind(x, f: _ -> Result<_,_> * ExprBreakType) = (bindFailure (f >> fst) x, Continue)
+    member this.Using(x: #IDisposable, f: #IDisposable -> Result<_,_> * ExprBreakType) =
+      try f x
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine(x: Result<_, _>, rest) =
-      match specialRet with
-      | Some x -> unbox x
-      | None -> if isFailure x then x else rest ()
-    member this.TryWith(f, h) = try (f ()): Result<_, _> with e -> h e
-    member this.TryFinally(f, g) = try (f ()): Result<_, _> finally g ()
-    member this.Delay(f: unit -> Result<_, _>) = f
-    member this.Run(f) = specialRet <- None; f ()
+    member this.Combine((x: Result<_, _>, typ), rest) =
+      match typ with
+      | Break -> x, Break
+      | Continue -> if isFailure x then x, Break else rest ()
+    member this.TryWith(f, h) = try (f ()) with e -> h e
+    member this.TryFinally(f, g) = try (f ()) finally g ()
+    member this.Delay(f: unit -> Result<_, _> * ExprBreakType) = f
+    member this.Run(f) = f () |> fst
 
   type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
     inherit FailureBuilder()
-    member this.Zero () = Success zeroValue
+    member this.Zero () = Success zeroValue, Continue
     member this.While(guard, f) =
       if not (guard ()) then this.Zero()
       else let x = f () in this.Combine(x, fun () -> this.While(guard, f))
