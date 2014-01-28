@@ -97,29 +97,22 @@ module Result =
   [<CompiledName "MapFailure">]
   let mapFailure f (result: Result<_, _>) = result.MapFailure(f)
 
-  open System.ComponentModel
-
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  module Impl =
-    [<EditorBrowsable(EditorBrowsableState.Never)>]
-    type ExprBreakType = Break | Continue
-
-  open Impl
+  open ComputationExpr
 
   type ResultBuilder internal () =
     member this.Return(x) = (Success x), Break
     member this.ReturnFrom(x: Result<_, _>) = x, Break
-    member this.Bind(x, f: _ -> Result<_,_> * ExprBreakType) = (bind (f >> fst) x, Continue)
-    member this.Using(x: #IDisposable, f: #IDisposable -> Result<_,_> * ExprBreakType) =
+    member this.Bind(x, f: _ -> Result<_,_> * FlowControl) = (bind (f >> fst) x, Continue)
+    member this.Using(x: #IDisposable, f: #IDisposable -> Result<_,_> * FlowControl) =
       try f x
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine((x: Result<_, _>, typ), rest: unit -> Result<_,_> * ExprBreakType) =
-      match typ with
+    member this.Combine((x: Result<_, _>, cont), rest: unit -> Result<_,_> * FlowControl) =
+      match cont with
       | Break -> x, Break
       | Continue -> if isSuccess x then x, Break else rest ()
     member this.TryWith(f, h) = try (f ()) with e -> h e
     member this.TryFinally(f, g) = try (f ()) finally g ()
-    member this.Delay(f: unit -> (Result<_, _> * ExprBreakType)) = f
+    member this.Delay(f: unit -> (Result<_, _> * FlowControl)) = f
     member this.Run(f) = f () |> fst
 
   type ResultWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =
@@ -136,17 +129,17 @@ module Result =
   type FailureBuilder internal () =
     member this.Return(x) = Failure x, Break
     member this.ReturnFrom(x: Result<_, _>) = x, Break
-    member this.Bind(x, f: _ -> Result<_,_> * ExprBreakType) = (bindFailure (f >> fst) x, Continue)
-    member this.Using(x: #IDisposable, f: #IDisposable -> Result<_,_> * ExprBreakType) =
+    member this.Bind(x, f: _ -> Result<_,_> * FlowControl) = (bindFailure (f >> fst) x, Continue)
+    member this.Using(x: #IDisposable, f: #IDisposable -> Result<_,_> * FlowControl) =
       try f x
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine((x: Result<_, _>, typ), rest) =
-      match typ with
+    member this.Combine((x: Result<_, _>, cont), rest) =
+      match cont with
       | Break -> x, Break
       | Continue -> if isFailure x then x, Break else rest ()
     member this.TryWith(f, h) = try (f ()) with e -> h e
     member this.TryFinally(f, g) = try (f ()) finally g ()
-    member this.Delay(f: unit -> Result<_, _> * ExprBreakType) = f
+    member this.Delay(f: unit -> Result<_, _> * FlowControl) = f
     member this.Run(f) = f () |> fst
 
   type FailureWithZeroBuilder<'TZero> internal (zeroValue: 'TZero) =

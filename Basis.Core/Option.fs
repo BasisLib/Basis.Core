@@ -18,25 +18,18 @@ module Option =
   | Some v -> v
   | None -> defaultLazyValue |> Lazy.value
 
-  open System.ComponentModel
-
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  module Impl =
-    [<EditorBrowsable(EditorBrowsableState.Never)>]
-    type ExprBreakType = Break | Continue
-
-  open Impl
+  open ComputationExpr
 
   type OptionBuilder internal () =
     member this.Zero() = None, Continue
     member this.Return(x) = Some x, Break
     member this.ReturnFrom(x: _ option) = x, Break
-    member this.Bind(x, f: _ -> _ option * ExprBreakType) = (Option.bind (f >> fst) x, Continue)
-    member this.Using(x: #IDisposable, f: #IDisposable -> _ option * ExprBreakType) =
+    member this.Bind(x, f: _ -> _ option * FlowControl) = (Option.bind (f >> fst) x, Continue)
+    member this.Using(x: #IDisposable, f: #IDisposable -> _ option * FlowControl) =
       try f x
       finally match box x with null -> () | notNull -> x.Dispose()
-    member this.Combine((x: _ option, typ), rest: unit -> _ option * ExprBreakType) =
-      match typ with
+    member this.Combine((x: _ option, cont), rest: unit -> _ option * FlowControl) =
+      match cont with
       | Break -> x, Break
       | Continue -> if x.IsSome then x, Break else rest ()
     member this.TryWith(f, h) = try f () with e -> h e
@@ -48,7 +41,7 @@ module Option =
       this.Using(
         xs.GetEnumerator(),
         fun itor -> this.While(itor.MoveNext, fun () -> f itor.Current))
-    member this.Delay(f: unit -> _ option * ExprBreakType) = f
+    member this.Delay(f: unit -> _ option * FlowControl) = f
     member this.Run(f) = f () |> fst
 
 [<AutoOpen>]
