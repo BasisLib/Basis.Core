@@ -71,7 +71,7 @@ module Result =
   let getOrElse defaultValueSource = function Success v -> v | Failure _ -> defaultValueSource ()
 
   [<CompiledName "GetFailureOrElse">]
-  let getFailueOrElse defaultValueSource = function Failure v -> v | Success _ -> defaultValueSource ()
+  let getFailureOrElse defaultValueSource = function Failure v -> v | Success _ -> defaultValueSource ()
 
   [<CompiledName "GetOrElse">]
   let getOr' defaultLazyValue = function Success v -> v | Failure _ -> defaultLazyValue |> Lazy.value
