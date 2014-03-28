@@ -17,3 +17,12 @@ module Option =
   let getOr' defaultLazyValue = function
   | Some v -> v
   | None -> defaultLazyValue |> Lazy.value
+
+  type OptionBuilder internal () =
+    member thix.Return(x) = Some x
+    member this.ReturnFrom(x: _ option) = x
+    member this.Bind(x, f) = Option.bind f x
+
+[<AutoOpen>]
+module OptionDefaultOps =
+  let option = Option.OptionBuilder()
