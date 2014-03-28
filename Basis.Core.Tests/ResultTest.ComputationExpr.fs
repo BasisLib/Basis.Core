@@ -6,6 +6,7 @@ open FsCheck
 open FsCheck.NUnit
 
 open Basis.Core
+open Basis.Core.ComputationExpr.State
 
 [<TestFixture>]
 module ResultComputationExprTest =

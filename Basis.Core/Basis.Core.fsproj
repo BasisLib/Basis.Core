@@ -49,10 +49,10 @@
     <Compile Include="Xml.fs" />
     <Compile Include="XPath.fs" />
     <Compile Include="Lazy.fs" />
-    <Compile Include="ComputationExpr.fs" />
     <Compile Include="Option.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="List.fs" />
+    <Compile Include="ComputationExpr.fs" />
     <Compile Include="NameValueBag.fs" />
   </ItemGroup>
   <PropertyGroup>

@@ -4,6 +4,7 @@ open NUnit.Framework
 open FsUnit
 
 open Basis.Core
+open Basis.Core.ComputationExpr.State
 
 [<TestFixture>]
 module OptionComputationExprTest =
