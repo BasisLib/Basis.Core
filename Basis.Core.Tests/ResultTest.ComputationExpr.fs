@@ -8,6 +8,50 @@ open FsCheck.NUnit
 open Basis.Core
 
 [<TestFixture>]
+module LightweightResultComputationExprTest =
+  [<Test>]
+  let ret () =
+    let res = result { return 1 }
+    res |> should equal (Success 1)
+
+  [<Test>]
+  let retFailure () =
+    let res = failure { return "hoge" }
+    res |> should equal (Failure "hoge")
+
+  let src_letBinding =
+    let data (x: Result<int, string>, expected: Result<string, string>) = TestCaseData(x, expected)
+    [
+      data (Success 10,     Success "20")
+      data (Failure "hoge", Failure "hoge")
+    ]
+
+  let src_letBindingFailure =
+    let data (x: Result<int, string>, expected: Result<int, string>) = TestCaseData(x, expected)
+    [
+      data (Success 10,     Success 10)
+      data (Failure "hoge", Failure "hogehoge")
+    ]
+
+  [<TestCaseSource "src_letBinding">]
+  let letBinding (x: Result<int, string>, expected: Result<string, string>) =
+    let res = result {
+      let! a = x
+      return a * 2 |> string
+    }
+    res |> should equal expected
+
+  [<TestCaseSource "src_letBindingFailure">]
+  let letBindingFailure (x: Result<int, string>, expected: Result<int, string>) =
+    let res = failure {
+      let! a = x
+      return a + a
+    }
+    res |> should equal expected
+
+open Basis.Core.ComputationExpr.State
+
+[<TestFixture>]
 module ResultComputationExprTest =
   [<Test>]
   let zero () =
