@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="RegularExpressions.fs" />
     <Compile Include="Str.fs" />
     <Compile Include="Nullable.fs" />
     <Compile Include="Xml.fs" />
