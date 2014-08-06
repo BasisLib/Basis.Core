@@ -76,7 +76,7 @@ module ActivePatterns =
     if m.Success then Some m else None
   let (|NotMatched|_|) pattern input =
     if Regex.IsMatch(input, pattern) then None else Some ()
-  let (|RegexSuccess|RegexFailure|) (x: #Group) = if Group.success x then RegexSuccess x else RegexFailure
+  let (|MatchSuccess|MatchFailure|) (x: #Group) = if Group.success x then MatchSuccess x else MatchFailure
   let (|Captures|) (x: #Group) = Group.captures x
   let (|CaptureCollection|) (x: #Group) = Group.captureCollection x
   let (|CaptureValues|) (x: #Group) = Group.captures x |> List.map Capture.value

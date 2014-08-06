@@ -36,8 +36,8 @@ module RegularExpressionsTest =
       let actual =
         let r = Regex.create ""
         match Str.Regex.match' @"\d+" input with
-        | RegexSuccess _ -> true
-        | RegexFailure -> false
+        | MatchSuccess _ -> true
+        | MatchFailure -> false
       actual |> should equal expected
 
     [<Test>]
