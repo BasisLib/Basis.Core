@@ -54,6 +54,7 @@
     <Compile Include="List.fs" />
     <Compile Include="ComputationExpr.fs" />
     <Compile Include="NameValueBag.fs" />
+    <Compile Include="LegacyCollection.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
