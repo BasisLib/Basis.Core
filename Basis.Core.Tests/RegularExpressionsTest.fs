@@ -17,7 +17,7 @@ module RegularExpressionsTest =
     let ``|Matched|_| pattern`` input expected =
       let actual =
         match input with
-        | Matched @"\d+" m -> true
+        | Matched @"\d+" _ -> true
         | _ -> false
       actual |> should equal expected
 
@@ -26,7 +26,7 @@ module RegularExpressionsTest =
     let ``|NotMatched|_| pattern `` input expected =
       let actual =
         match input with
-        | NotMatched @"\d+" m -> true
+        | NotMatched @"\d+" -> true
         | _ -> false
       actual |> should equal expected
 
