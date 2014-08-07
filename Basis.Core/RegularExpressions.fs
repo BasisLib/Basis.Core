@@ -70,7 +70,7 @@ module Regex =
   let escape str = Regex.Escape(str)
   let unescape str = Regex.Unescape(str)
 
-module ActivePatterns =
+module Patterns =
   let (|Matched|_|) pattern input =
     let m = Regex.Match(input, pattern)
     if m.Success then Some m else None

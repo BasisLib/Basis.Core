@@ -5,12 +5,11 @@ open Basis.Core
 open NUnit.Framework
 open FsUnit
 
-
 module RegularExpressionsTest =
   [<TestFixture>]
-  module ActivePatternsTest =
+  module PatternsTest =
     open Basis.Core.RegularExpressions
-    open Basis.Core.RegularExpressions.ActivePatterns
+    open Basis.Core.RegularExpressions.Patterns
 
     [<TestCase("123", true)>]
     [<TestCase("abc", false)>]
