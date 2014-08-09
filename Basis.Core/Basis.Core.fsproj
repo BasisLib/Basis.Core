@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Legacy\NameValueCollection.fs" />
     <Compile Include="RegularExpressions.fs" />
     <Compile Include="Str.fs" />
     <Compile Include="Nullable.fs" />
@@ -55,6 +56,7 @@
     <Compile Include="List.fs" />
     <Compile Include="ComputationExpr.fs" />
     <Compile Include="NameValueBag.fs" />
+    <Compile Include="Legacy\LegacyCollection.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

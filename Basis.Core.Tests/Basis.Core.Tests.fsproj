@@ -52,6 +52,8 @@
     <Compile Include="ResultTest.fs" />
     <Compile Include="ResultTest.ComputationExpr.fs" />
     <Compile Include="NameValueBagTest.fs" />
+    <Compile Include="Legacy\LegacyCollectionTest.fs" />
+    <Compile Include="Legacy\NameValueCollectionTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsCheck">
