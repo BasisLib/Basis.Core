@@ -156,3 +156,19 @@ module Str =
     match tryFindIndex (pred >> not) str with
     | Some idx -> subTo idx str
     | None -> str
+
+  module Regex =
+    open System.Text.RegularExpressions
+
+    let match' pattern input = Regex.Match(input, pattern)
+    let tryMatch pattern input =
+      let m = match' pattern input
+      if m.Success then Some m else None
+    let matchSeq pattern input = seq { for x in Regex.Matches(input, pattern) -> x }
+    let matchList pattern input = [ for x in Regex.Matches(input, pattern) -> x ]
+    let matchArray pattern input = [| for x in Regex.Matches(input, pattern) -> x |]
+    let matchCollection pattern input = Regex.Matches(input, pattern)
+    let isMatch pattern input = Regex.IsMatch(input, pattern)
+    let split pattern input = Regex.Split(input, pattern)
+    let replace (pattern: string) (replacement: string) (input: string) = Regex.Replace(input, pattern, replacement)
+    let replaceWithEvaluator (pattern: string) (f: Match -> string) (input: string) = Regex.Replace(input, pattern, MatchEvaluator(f))

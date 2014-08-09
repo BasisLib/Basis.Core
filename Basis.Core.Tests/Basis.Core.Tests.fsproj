@@ -43,6 +43,7 @@
     <None Include="App.config" />
     <Compile Include="FsCheck.NUnit.fs" />
     <Compile Include="TestUtils.fs" />
+    <Compile Include="RegularExpressionsTest.fs" />
     <Compile Include="StrTest.fs" />
     <Compile Include="NullableTest.fs" />
     <Compile Include="XmlTest.fs" />
